@@ -28,4 +28,5 @@ Contributions are welcome! Here's how you can help:
 
 ---
 
-This project is licensed under the [MIT License](MIT license.txt).
+This project is licensed under the [MIT License]([![License: MIT](https://github.com/loner1423/AI-Enabled-Visa-Status-Prediction-and-Processing-Time-Estimator/blob/main/MIT%20license.txt)](LICENSE)
+).
