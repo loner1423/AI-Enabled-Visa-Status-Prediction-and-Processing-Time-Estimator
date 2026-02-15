@@ -28,4 +28,4 @@ Contributions are welcome! Here's how you can help:
 
 ---
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](MIT license).
