@@ -1,46 +1,212 @@
-#import packages
 
-import csv
-import numpy as np
-import pandas as pd # used to store and manipulate the data in table form
-from datetime import datetime # helps to convert the date strings into the real date objects
+# ====================== MILESTONE 1 DATA COLLECTION & PREPROCESSING
+import pandas as pd              # For data manipulation
+import numpy as np               # For numerical operations
+import matplotlib.pyplot as plt  # For visualization
+import seaborn as sns            # For statistical plots
 
-df = pd.read_csv("VISASTATUSDATASET.csv")
+# 1. Load the Dataset
 
-print("Original DataFrame with Missing Values:\n", df)
+df = pd.read_csv("hello.csv")  # Load original dataset
+print("Initial Dataset Shape:", df.shape)
+print("\nInitial Missing Values:\n", df.isnull().sum())
 
-miss= df.isnull().sum()
 
-# isnull-> finds the missing values
-# sum() -> counts them in colm-wise
-print("\nMissing values count:\n", miss)
+# 2. Convert Date Columns
+# Convert string dates to datetime format
+# errors='coerce' converts invalid values into NaT
+df["case_received_date"] = pd.to_datetime(df["case_received_date"], errors='coerce')
+df["decision_date"] = pd.to_datetime(df["decision_date"], errors='coerce')
+# 3. Handle Missing Values
+# Fill missing education values with 'Unknown'
+df["foreign_worker_info_education"].fillna("Unknown", inplace=True)
 
-# mode()[0]-> returns the most frequ date in the colm
-# # fillna()-> replaces the missing values inside the df
-df["RECEIVED_DATE"].fillna(df["RECEIVED_DATE"].mode()[0], inplace=True)
-df["DECISION_DATE"].fillna(df["DECISION_DATE"].mode()[0], inplace=True)
+# Fill missing categorical values if present
+categorical_columns = ["case_status","employer_country"]
+for col in categorical_columns:
+    if col in df.columns:
+        df[col].fillna("Unknown", inplace=True)
 
-df["CASE_STATUS"].fillna("Unknown", inplace=True)
-df["EMPLOYER_STATE"].fillna("Unknown", inplace=True)
 
-df["RECEIVED_DATE"] = pd.to_datetime(df["RECEIVED_DATE"])
-df["DECISION_DATE"] = pd.to_datetime(df["DECISION_DATE"])
+# 4. Generate Target Variable
+# Calculate number of days between submission and decision
+if "processing_days" not in df.columns:
+    df["processing_days"] = (df["decision_date"] - df["case_received_date"]).dt.days
 
-print(df)
+# Remove negative processing times (invalid records)
+df = df[df["processing_days"] >= 0]
 
-df["processing_days"] = (df["DECISION_DATE"] - df["RECEIVED_DATE"]).dt.days
-df["processing_days"].fillna(df["processing_days"].mean(),inplace=True)
-print("\nAfter calculating processing days:\n", df)
 
-df_encoded = pd.get_dummies(df, columns=["CASE_STATUS","VISA_CLASS","EMPLOYER_STATE"])
-print("\nEncoded DataFrame:\n", df_encoded)
+print("\nShape Before Outlier Removal:", df.shape)
 
+
+# 5. Remove Outliers (IQR Method)
+# IQR is suitable for skewed real-world data
+
+Q1 = df["processing_days"].quantile(0.25)  # 25th percentile
+Q3 = df["processing_days"].quantile(0.75)  # 75th percentile
+IQR = Q3 - Q1
+
+# Define acceptable range
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+# Keep only records within range
+df = df[
+    (df["processing_days"] >= lower_bound) &
+    (df["processing_days"] <= upper_bound)
+]
+
+print("Lower Bound:", lower_bound)
+print("Upper Bound:", upper_bound)
+print("Shape After Outlier Removal:", df.shape)
+
+
+# 6. Save Cleaned Dataset
 
 df.fillna(df.mode().iloc[0], inplace=True)
+df.to_csv("cleaned_visa_dataset.csv", index=False)
 
-miss= df.isnull().sum()
-print("\nMissing values count:\n", miss)
-df.to_csv("AIVISASTATUSDATASET.csv",index=False)
-# converts the text to numeric columns
-# one-hot encoding - as the ML model requires the numeric data
+#============== Milestone 1 Completed ======================
 
+# ====== MILESTONE 2 EDA & FEATURE ENGINEERING =============================
+import os  # To create folders
+# Create folder to store graphs
+output_folder = "visualizations"
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+
+# 1. Basic Statistical Summary
+
+print("\nProcessing Days Summary Statistics:")
+print(df["processing_days"].describe())
+
+
+# 2. Distribution Plot
+
+plt.figure(figsize=(8,5))
+sns.histplot(df["processing_days"], kde=True)
+plt.title("Distribution of Visa Processing Days")
+plt.xlabel("Processing Days")
+plt.ylabel("Frequency")
+plt.show()
+plt.savefig(os.path.join(output_folder, "distribution_processing_days.png"), dpi=300)
+plt.close()
+
+
+# 3. Boxplot for Outlier Verification
+
+plt.figure(figsize=(8,4))
+sns.boxplot(x=df["processing_days"])
+plt.title("Boxplot After Outlier Removal")
+plt.show()
+plt.savefig(os.path.join(output_folder, "Boxplot After Outlier Removal.png"), dpi=300)
+plt.close()
+
+
+# 4. Feature Engineering
+
+# Feature 1: Application Month
+df["application_month"] = df["case_received_date"].dt.month
+
+
+# Feature 2: Seasonal Index
+# Peak season assumed: Jan, Feb, Dec
+
+df["season"] = df["application_month"].apply(
+    lambda x: "Peak" if x in [1, 2, 12] else "Off-Peak"
+)
+
+
+# Feature 3: Country-Specific Average Processing Time
+country_avg = df.groupby(
+    "foreign_worker_info_birth_country"
+)["processing_days"].mean()
+
+df["country_avg_processing"] = df[
+    "foreign_worker_info_birth_country"
+].map(country_avg)
+
+
+# Feature 4: Visa-Type Average Processing Time
+visa_avg = df.groupby(
+    "class_of_admission"
+)["processing_days"].mean()
+
+df["visa_avg_processing"] = df[
+    "class_of_admission"
+].map(visa_avg)
+
+
+# 5. Correlation Analysis
+
+corr_matrix = df[[
+    "processing_days",
+    "application_month",
+    "country_avg_processing",
+    "visa_avg_processing"
+]].corr()
+
+plt.figure(figsize=(6,5))
+sns.heatmap(corr_matrix, annot=True, cmap="coolwarm")
+plt.title("Correlation Heatmap")
+plt.show()
+plt.savefig(os.path.join(output_folder, "correlation_heatmap.png"), dpi=300)
+plt.close()
+
+
+plt.figure()
+plt.hist(df["processing_days"], bins=5)
+plt.title("Distribution of Visa Processing Days")
+plt.xlabel("Processing Days")
+plt.ylabel("Number of Applications")
+plt.show()
+plt.savefig(os.path.join(output_folder, "distribution_processing_days.png"), dpi=300)
+plt.close()
+
+country_avg = df.groupby("foreign_worker_info_birth_country")["processing_days"].mean()
+plt.figure()
+plt.bar(country_avg.index, country_avg.values)
+plt.title("Average Processing Days by Country")
+plt.xlabel("Country")
+plt.ylabel("Average Processing Days")
+plt.show()
+plt.savefig(os.path.join(output_folder, "average_processing_days_by_country.png"), dpi=300)
+plt.close()
+
+visa_avg = df.groupby("class_of_admission")["processing_days"].mean()
+plt.figure()
+plt.bar(visa_avg.index, visa_avg.values)
+plt.title("Average Processing Days by Visa Type")
+plt.xlabel("Visa Type")
+plt.ylabel("Average Processing Days")
+plt.show()
+plt.savefig(os.path.join(output_folder, "average_processing_days_by_visa_type.png"), dpi=300)
+plt.close()
+
+plt.figure()
+plt.scatter(df["application_month"], df["processing_days"])
+plt.title("Processing Days vs Application Month")
+plt.xlabel("Application Month")
+plt.ylabel("Processing Days")
+plt.show()
+plt.savefig(os.path.join(output_folder, "processing_days_vs_application_month.png"), dpi=300)
+plt.close()
+
+monthly_avg = df.groupby("application_month")["processing_days"].mean()
+plt.figure()
+plt.plot(monthly_avg.index, monthly_avg.values)
+plt.title("Monthly Trend of Processing Days")
+plt.xlabel("Month")
+plt.ylabel("Average Processing Days")
+plt.show()
+plt.savefig(os.path.join(output_folder, "monthly_trend_processing_days.png"), dpi=300)
+plt.close()
+
+
+# 6. Save Final Feature Dataset
+
+
+df.to_csv("final_feature_engineered_dataset.csv", index=False)
+print("Final dataset with engineered features saved as 'final_feature_engineered_dataset.csv'.")
+# ============= Milestone 2 Completed ==============
