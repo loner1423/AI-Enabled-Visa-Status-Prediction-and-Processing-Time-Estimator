@@ -4,15 +4,23 @@
 
 ## 📝 Description
 
-AI-Enabled Visa Status Prediction and Processing Time Estimator is a cutting-edge machine learning application designed to demystify the complex immigration process. By leveraging historical visa data and advanced predictive modeling, this tool provides applicants with high-accuracy predictions regarding their visa approval status and estimates the likely processing timeframe. Whether you are applying for a work, student, or tourist visa, this platform helps users manage expectations and plan their futures with greater certainty. It features an intuitive dashboard, real-time data analysis, and personalized insights based on specific applicant profiles and current immigration trends.
+The AI-Enabled Visa Status Prediction and Processing Time Estimator is a sophisticated data-driven solution designed to eliminate the uncertainty often associated with immigration and travel processes. By leveraging advanced machine learning models, the platform analyzes historical trends and applicant profiles to provide highly accurate predictions regarding visa approval outcomes and estimated processing durations. This tool empowers applicants and organizations with actionable insights, enabling better planning and reduced anxiety by transforming complex bureaucratic data into clear, predictable timelines and success probabilities.
 
 ## 📁 Project Structure
 
 ```
 .
-├── AIVISASTATUSDATASET.csv
 ├── MIT license.txt
-└── visa_status.py
+├── final_feature_engineered_dataset.csv
+├── visa_status.py
+└── visualizations
+    ├── Boxplot After Outlier Removal.png
+    ├── average_processing_days_by_country.png
+    ├── average_processing_days_by_visa_type.png
+    ├── correlation_heatmap.png
+    ├── distribution_processing_days.png
+    ├── monthly_trend_processing_days.png
+    └── processing_days_vs_application_month.png
 ```
 
 ## 👥 Contributing
@@ -25,6 +33,8 @@ Contributions are welcome! Here's how you can help:
 4. **Commit** your changes: `git commit -am 'Add some feature'`
 5. **Push** to your branch: `git push origin feature/your-feature`
 6. **Open** a pull request
+
+Please ensure your code follows the project's style guidelines and includes tests where applicable.
 
 ---
 
