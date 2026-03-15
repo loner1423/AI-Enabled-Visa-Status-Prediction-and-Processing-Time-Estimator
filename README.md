@@ -4,7 +4,7 @@
 
 ## 📝 Description
 
-The AI-Enabled Visa Status Prediction and Processing Time Estimator is a sophisticated data-driven solution designed to eliminate the uncertainty often associated with immigration and travel processes. By leveraging advanced machine learning models, the platform analyzes historical trends and applicant profiles to provide highly accurate predictions regarding visa approval outcomes and estimated processing durations. This tool empowers applicants and organizations with actionable insights, enabling better planning and reduced anxiety by transforming complex bureaucratic data into clear, predictable timelines and success probabilities.
+The AI-Enabled Visa Status Prediction and Processing Time Estimator is a sophisticated machine learning platform designed to provide transparency and predictability to the often-opaque immigration process. By leveraging historical visa data and real-time processing trends, this tool offers applicants data-driven insights into their approval probabilities and estimated wait times. Built using advanced predictive modeling, the system analyzes complex variables such as application type, nationality, and current administrative backlogs. This intelligent estimator empowers travelers and expatriates to make informed decisions and plan their international transitions with confidence, effectively bridging the gap between uncertainty and actionable data.
 
 ## 📁 Project Structure
 
@@ -12,15 +12,14 @@ The AI-Enabled Visa Status Prediction and Processing Time Estimator is a sophist
 .
 ├── MIT license.txt
 ├── final_feature_engineered_dataset.csv
+├── final_feature_engineered_dataset_for_ Model.csv
 ├── visa_status.py
 └── visualizations
-    ├── Boxplot After Outlier Removal.png
-    ├── average_processing_days_by_country.png
-    ├── average_processing_days_by_visa_type.png
-    ├── correlation_heatmap.png
-    ├── distribution_processing_days.png
-    ├── monthly_trend_processing_days.png
-    └── processing_days_vs_application_month.png
+    ├── Figure_1.png
+    ├── Figure_2.png
+    ├── Figure_3.png
+    ├── Figure_4.png
+    └── Figure_5.png
 ```
 
 ## 👥 Contributing
@@ -37,5 +36,4 @@ Contributions are welcome! Here's how you can help:
 Please ensure your code follows the project's style guidelines and includes tests where applicable.
 
 ---
-
 This project is licensed under the [[MIT License](https://github.com/loner1423/AI-Enabled-Visa-Status-Prediction-and-Processing-Time-Estimator/blob/main/MIT%20license.txt)].
