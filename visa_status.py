@@ -4,7 +4,16 @@ import pandas as pd              # For data manipulation
 import numpy as np               # For numerical operations
 import matplotlib.pyplot as plt  # For visualization
 import seaborn as sns            # For statistical plots
+import pickle
 
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.ensemble import GradientBoostingRegressor
+
+from sklearn.model_selection import GridSearchCV
+
+from xgboost import XGBRegressor
 # 1. Load the Dataset
 
 df = pd.read_csv("hello.csv")  # Load original dataset
@@ -119,6 +128,9 @@ df["season"] = df["application_month"].apply(
 
 
 # Feature 3: Country-Specific Average Processing Time
+df["application_month"] = df["case_received_date"].dt.month
+df["application_year"] = df["case_received_date"].dt.year
+df["processing_weekday"] = df["case_received_date"].dt.weekday
 country_avg = df.groupby(
     "foreign_worker_info_birth_country"
 )["processing_days"].mean()
@@ -210,3 +222,77 @@ plt.close()
 df.to_csv("final_feature_engineered_dataset.csv", index=False)
 print("Final dataset with engineered features saved as 'final_feature_engineered_dataset.csv'.")
 # ============= Milestone 2 Completed ==============
+# ============ ENCODING CATEGORICAL VARIABLES ===============================================
+
+encoder = LabelEncoder()
+categorical_cols = [
+    "class_of_admission",
+    "foreign_worker_info_birth_country",
+    "employer_country",
+    "season"
+    "case_status"
+]
+for col in categorical_cols:
+    if col in df.columns:
+        df[col] = encoder.fit_transform(df[col])
+
+# Remove date columns
+df = df.drop(["case_received_date","decision_date"], axis=1, errors="ignore")
+
+# Keep only numeric columns
+df = df.select_dtypes(include=[np.number])
+
+
+# ================ TRAIN TEST SPLIT ====================================
+X = df.drop("processing_days", axis=1)
+y = df["processing_days"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+# ============== FEATURE SCALING ========================================
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+model = XGBRegressor(
+    n_estimators=300,
+    learning_rate=0.05,
+    max_depth=6,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    random_state=42
+)
+
+print("\nModel Performance")
+model.fit(X_train, y_train)
+
+preds = model.predict(X_test)
+
+mae = mean_absolute_error(y_test, preds)
+rmse = np.sqrt(mean_squared_error(y_test, preds))
+r2 = r2_score(y_test, preds)
+
+print("MAE:", mae)
+print("RMSE:", rmse)
+print("R2 Score:", r2)
+
+# ========== HYPERPARAMETER TUNING ==============================================
+
+print("\nHyperparameter Tuning")
+param_grid = {
+    "n_estimators":[200,300],
+    "max_depth":[5,6,8],
+    "learning_rate":[0.01,0.05,0.1]
+}
+
+grid = GridSearchCV(XGBRegressor(), param_grid, cv=5)
+grid.fit(X_train, y_train)
+best_model = grid.best_estimator_
+print("Best Parameters:", grid.best_params_)
+
+# ======SAVE MODEL===================================================
+with open("visa_processing_model.pkl","wb") as f:
+    pickle.dump(best_model,f)
+
+print("\nModel Saved Successfully")
