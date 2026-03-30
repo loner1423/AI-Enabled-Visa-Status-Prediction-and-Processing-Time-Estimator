@@ -11,7 +11,7 @@ AI-Enabled Visa Status Prediction and Processing Time Estimator is a sophisticat
 - 🐍 Python
 
 ### 🚀 Deployment
-Check out the live application [here](https://your-deployment-url.com).
+Check out the live application [here]([https://your-deployment-url.com](https://ai-enabled-visa-status-prediction-and-processing-time-estimato.streamlit.app/)).
 
 ## 📦 Key Dependencies
 
