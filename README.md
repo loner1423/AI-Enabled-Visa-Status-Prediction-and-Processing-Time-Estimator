@@ -1,21 +1,52 @@
 # AI-Enabled-Visa-Status-Prediction-and-Processing-Time-Estimator
 
-
+![Python](https://img.shields.io/badge/-Python-blue?logo=python&logoColor=white)
 
 ## 📝 Description
 
-The AI-Enabled Visa Status Prediction and Processing Time Estimator is a sophisticated machine learning platform designed to provide transparency and predictability to the often-opaque immigration process. By leveraging historical visa data and real-time processing trends, this tool offers applicants data-driven insights into their approval probabilities and estimated wait times. Built using advanced predictive modeling, the system analyzes complex variables such as application type, nationality, and current administrative backlogs. This intelligent estimator empowers travelers and expatriates to make informed decisions and plan their international transitions with confidence, effectively bridging the gap between uncertainty and actionable data.
+AI-Enabled Visa Status Prediction and Processing Time Estimator is a sophisticated Python-based application designed to bring transparency and predictability to the immigration process. By leveraging advanced machine learning algorithms, the tool analyzes historical data patterns to predict the likelihood of visa approval and provides realistic estimates for processing timelines. This solution empowers applicants and legal professionals with data-driven insights, helping to mitigate the uncertainty and stress often associated with international travel and relocation planning.
+
+## 🛠️ Tech Stack
+
+- 🐍 Python
+
+### 🚀 Deployment
+Check out the live application [here](https://your-deployment-url.com).
+
+## 📦 Key Dependencies
+
+```
+streamlit: latest
+pandas: latest
+numpy: latest
+scikit-learn: latest
+xgboost: latest
+matplotlib: latest
+seaborn: latest
+```
 
 ## 📁 Project Structure
 
 ```
 .
+├── Documents
+│   ├── SaiPavanReddyP_Agile_Doc.xlsx
+│   ├── SaiPavanReddyP_Defect_Tracker.xlsx
+│   └── SaiPavanReddyP_Unit_Test_Plan.xlsx
 ├── MIT license.txt
+├── USVISA.csv
+├── app.py
+├── country_avg.pkl
+├── encoders.pkl
+├── features.pkl
 ├── final_feature_engineered_dataset.csv
 ├── final_feature_engineered_dataset_for_ Model.csv
+├── model.pkl
+├── requirements.txt
+├── scaler.pkl
+├── train.py
+├── visa_avg.pkl
 ├── visa_status.py
-├── Documents
-    └── SaiPavanReddyP_Agile_Doc.xlsx
 └── visualizations
     ├── Figure_1.png
     ├── Figure_2.png
@@ -23,6 +54,17 @@ The AI-Enabled Visa Status Prediction and Processing Time Estimator is a sophist
     ├── Figure_4.png
     └── Figure_5.png
 ```
+
+## 🛠️ Development Setup
+
+### Python Setup
+1. Install Python (v3.8+ recommended)
+2. Create a virtual environment: `python -m venv venv`
+3. Activate the environment:
+   - Windows: `venv\Scripts\activate`
+   - Unix/MacOS: `source venv/bin/activate`
+4. Install dependencies: `pip install -r requirements.txt`
+
 
 ## 👥 Contributing
 
